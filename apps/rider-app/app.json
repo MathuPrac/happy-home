@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Bitefast Rider",
+    "slug": "bitefast-rider",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "ios": {
+      "bundleIdentifier": "com.bitefast.rider",
+      "infoPlist": {
+        "NSLocationAlwaysUsageDescription": "We need your location to assign and track deliveries.",
+        "UIBackgroundModes": ["location", "fetch"]
+      }
+    },
+    "android": {
+      "package": "com.bitefast.rider",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_BACKGROUND_LOCATION", "FOREGROUND_SERVICE"]
+    },
+    "plugins": ["expo-router", ["expo-location", {"isAndroidBackgroundLocationEnabled": true}]]
+  }
+}
