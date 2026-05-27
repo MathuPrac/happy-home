@@ -96,4 +96,20 @@ export class JwtService {
   }
 }
 
-export const jwtService = new JwtService();
+let jwtServiceInstance: JwtService | undefined;
+
+export function getJwtService(): JwtService {
+  if (!jwtServiceInstance) {
+    jwtServiceInstance = new JwtService();
+  }
+  return jwtServiceInstance;
+}
+
+/** Lazy singleton — created on first use after Redis is connected. */
+export const jwtService: JwtService = new Proxy({} as JwtService, {
+  get(_target, prop) {
+    const service = getJwtService();
+    const value = service[prop as keyof JwtService];
+    return typeof value === 'function' ? value.bind(service) : value;
+  },
+});

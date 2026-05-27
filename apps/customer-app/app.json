@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Bitefast",
-    "slug": "bitefast-customer",
+    "name": "Happy Home",
+    "slug": "happy-home-customer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
@@ -13,7 +13,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.bitefast.customer",
+      "bundleIdentifier": "lk.happyhome.customer",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We use your location to find nearby restaurants and deliver to you."
       }
@@ -23,7 +23,7 @@
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#FF6B35"
       },
-      "package": "com.bitefast.customer",
+      "package": "lk.happyhome.customer",
       "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
     },
     "plugins": [

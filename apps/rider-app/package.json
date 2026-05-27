@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@restaurant/shared-types": "*",
+    "lucide-react-native": "^0.441.0",
     "@reduxjs/toolkit": "^2.2.3",
     "@tanstack/react-query": "^5.35.1",
     "@react-navigation/native": "^6.1.17",

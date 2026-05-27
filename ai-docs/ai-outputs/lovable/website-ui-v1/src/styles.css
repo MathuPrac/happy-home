@@ -1,0 +1,133 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-spice: var(--spice);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --shadow-luxe: 0 30px 80px -30px color-mix(in oklab, var(--gold) 30%, transparent);
+  --shadow-soft: 0 10px 40px -20px oklch(0 0 0 / 0.6);
+
+  --gradient-gold: linear-gradient(135deg, oklch(0.82 0.12 85) 0%, oklch(0.68 0.14 60) 100%);
+  --gradient-dark: linear-gradient(180deg, oklch(0.13 0.01 60) 0%, oklch(0.08 0.005 60) 100%);
+  --gradient-glow: radial-gradient(ellipse at top, color-mix(in oklab, var(--gold) 20%, transparent) 0%, transparent 60%);
+}
+
+:root {
+  --radius: 0.25rem;
+
+  /* Luxury dark theme inspired by candlelight, brass, and saffron */
+  --background: oklch(0.12 0.008 60);
+  --foreground: oklch(0.96 0.012 80);
+
+  --card: oklch(0.16 0.01 60);
+  --card-foreground: oklch(0.96 0.012 80);
+
+  --popover: oklch(0.16 0.01 60);
+  --popover-foreground: oklch(0.96 0.012 80);
+
+  --primary: oklch(0.78 0.14 75);            /* warm gold */
+  --primary-foreground: oklch(0.13 0.01 60);
+
+  --secondary: oklch(0.22 0.015 60);
+  --secondary-foreground: oklch(0.96 0.012 80);
+
+  --muted: oklch(0.2 0.012 60);
+  --muted-foreground: oklch(0.68 0.02 80);
+
+  --accent: oklch(0.55 0.18 35);             /* spice / terracotta */
+  --accent-foreground: oklch(0.97 0.012 80);
+
+  --gold: oklch(0.78 0.14 75);
+  --gold-soft: oklch(0.88 0.08 85);
+  --spice: oklch(0.55 0.18 35);
+
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.97 0.012 80);
+
+  --border: oklch(0.28 0.015 70 / 0.6);
+  --input: oklch(0.22 0.015 70);
+  --ring: oklch(0.78 0.14 75);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    background-image: var(--gradient-glow);
+    background-repeat: no-repeat;
+    background-size: 100% 800px;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); }
+  .text-gold { color: var(--gold); }
+  .bg-gold { background-color: var(--gold); }
+  .gradient-text {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hairline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--gold) 60%, transparent), transparent);
+  }
+  .container-luxe {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .container-luxe { padding-inline: 3rem; }
+  }
+}

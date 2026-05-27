@@ -1,0 +1,30 @@
+{
+  "name": "@restaurant/api-client",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared HTTP API client for the Happy Home monorepo",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@restaurant/shared-types": "*",
+    "axios": "^1.7.0"
+  },
+  "devDependencies": {
+    "@restaurant/tsconfig": "*",
+    "typescript": "^5.4.5"
+  }
+}

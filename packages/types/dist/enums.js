@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotificationType = exports.RiderStatus = exports.PaymentMethod = exports.PaymentStatus = exports.OrderStatus = exports.UserRole = void 0;
+exports.NotificationType = exports.RiderStatus = exports.PaymentMethod = exports.PaymentStatus = exports.OrderStatus = exports.UserStatus = exports.UserRole = void 0;
 var UserRole;
 (function (UserRole) {
     UserRole["CUSTOMER"] = "customer";
@@ -8,6 +8,13 @@ var UserRole;
     UserRole["RIDER"] = "rider";
     UserRole["ADMIN"] = "admin";
 })(UserRole || (exports.UserRole = UserRole = {}));
+var UserStatus;
+(function (UserStatus) {
+    UserStatus["ACTIVE"] = "active";
+    UserStatus["INACTIVE"] = "inactive";
+    UserStatus["SUSPENDED"] = "suspended";
+    UserStatus["PENDING_VERIFICATION"] = "pending_verification";
+})(UserStatus || (exports.UserStatus = UserStatus = {}));
 var OrderStatus;
 (function (OrderStatus) {
     OrderStatus["PENDING"] = "pending";

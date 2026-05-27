@@ -1,4 +1,3 @@
-// Auto-generated barrel exports for shadcn UI primitives
 export * from './accordion';
 export * from './alert';
 export * from './alert-dialog';

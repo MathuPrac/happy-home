@@ -4,6 +4,12 @@ export declare enum UserRole {
     RIDER = "rider",
     ADMIN = "admin"
 }
+export declare enum UserStatus {
+    ACTIVE = "active",
+    INACTIVE = "inactive",
+    SUSPENDED = "suspended",
+    PENDING_VERIFICATION = "pending_verification"
+}
 export declare enum OrderStatus {
     PENDING = "pending",
     CONFIRMED = "confirmed",

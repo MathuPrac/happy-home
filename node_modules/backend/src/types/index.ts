@@ -58,9 +58,4 @@ export interface BaseDocument extends Document {
   updatedAt: Date;
 }
 
-export enum UserStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  SUSPENDED = 'suspended',
-  PENDING_VERIFICATION = 'pending_verification',
-}
+export { UserStatus } from '@restaurant/shared-types';

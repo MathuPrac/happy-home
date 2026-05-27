@@ -1,0 +1,30 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "G:\\Web Buildora\\Projects\\Restaurant\\Happy-home-ecosystem\\apps\\backend\\logs\\.6b4175767f92d8c35934607c58e6798c9cf15093-audit.json",
+    "files": [
+        {
+            "date": 1779296081003,
+            "name": "G:\\Web Buildora\\Projects\\Restaurant\\Happy-home-ecosystem\\apps\\backend\\logs\\app-2026-05-20.log",
+            "hash": "e7c3af3944ac5d5636a58a84ec905e3f075417842ca63a5c28cd41f1f6d9a07d"
+        },
+        {
+            "date": 1779385521212,
+            "name": "G:\\Web Buildora\\Projects\\Restaurant\\Happy-home-ecosystem\\apps\\backend\\logs\\app-2026-05-21.log",
+            "hash": "52cdc0de84333c3893881365da18037d24ba3fc3fd4367d50235806deaae9697"
+        },
+        {
+            "date": 1779791840928,
+            "name": "G:\\Web Buildora\\Projects\\Restaurant\\Happy-home-ecosystem\\apps\\backend\\logs\\app-2026-05-26.log",
+            "hash": "d51a53521527af5b231a0573a0c019781097c6282d22321b8504a118264e277d"
+        },
+        {
+            "date": 1779886786423,
+            "name": "G:\\Web Buildora\\Projects\\Restaurant\\Happy-home-ecosystem\\apps\\backend\\logs\\app-2026-05-27.log",
+            "hash": "29eb71b3f9ca1eb5284a2b30a413ab11c5198933d1220b1926049ff66baf949a"
+        }
+    ],
+    "hashType": "sha256"
+}

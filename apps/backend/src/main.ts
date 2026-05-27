@@ -3,7 +3,6 @@ import 'express-async-errors';
 import { config } from '@/config';
 import { connectDatabase, disconnectDatabase } from '@/config/database';
 import { connectRedis, disconnectRedis } from '@/infrastructure/cache/redis';
-import { createAppServer } from './app';
 import { logger } from '@/shared/utils/logger';
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
@@ -13,6 +12,10 @@ async function bootstrap(): Promise<void> {
 
   await connectDatabase();
   await connectRedis();
+
+  // Delay loading the app until after connections are ready
+  // Using require() keeps us in the CommonJS world, avoiding ESM issues.
+  const { createAppServer } = require('./app');
 
   const { httpServer } = createAppServer();
 

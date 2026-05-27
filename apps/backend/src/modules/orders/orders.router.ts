@@ -2,16 +2,17 @@ import { Router } from 'express';
 import { OrdersController } from './controllers/orders.controller';
 import { OrderService } from './services/order.service';
 import { OrderRepository } from './repositories/order.repository';
+import { OrderEventService } from './events/order-event.service';
 import { CacheService } from '@/infrastructure/cache/redis';
 import { authenticate, authorize } from '@/core/middleware';
 import { UserRole } from '@restaurant/shared-types';
 
 const router = Router();
 
-// Dependency injection composition root
 const orderRepo = new OrderRepository();
 const cache = new CacheService();
-const orderService = new OrderService(orderRepo, cache);
+const eventService = new OrderEventService();
+const orderService = new OrderService(orderRepo, cache, eventService);
 const controller = new OrdersController(orderService);
 
 router.post('/', authenticate, authorize(UserRole.CUSTOMER), (req, res) => controller.createOrder(req, res));

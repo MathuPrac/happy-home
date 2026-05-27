@@ -2,20 +2,26 @@ import type { CreateOrderDto } from '../dtos/create-order.dto';
 import type { PaginationQuery } from '@restaurant/shared-types';
 import { OrderStatus } from '@restaurant/shared-types';
 import { OrderRepository } from '../repositories/order.repository';
-import { CacheService } from '../../../infrastructure/cache/redis/cache.service';
+import { CacheService } from '@/infrastructure/cache/redis/cache.service';
 import { BadRequestError, NotFoundError } from '@/core/errors';
-import { Logger } from '../../../shared/utils/logger';
+import { createLogger } from '@/shared/utils/logger';
+import { OrderEventService } from '../events/order-event.service';
+import { OrderEventFactory } from '../events/order.events';
 
 export class OrderService {
-  private readonly logger = new Logger('OrderService');
+  private readonly logger = createLogger('OrderService');
 
   constructor(
     private readonly orderRepo: OrderRepository,
     private readonly cache: CacheService,
+    private readonly eventService: OrderEventService,
   ) {}
 
   async createOrder(customerId: string, dto: CreateOrderDto) {
-    const subtotal = dto.items.reduce((sum, item) => sum + item.subtotal, 0);
+    const subtotal = dto.items.reduce(
+      (sum: number, item: { subtotal: number }) => sum + item.subtotal,
+      0,
+    );
     const tax = subtotal * 0.08;
     const total = subtotal + dto.deliveryFee + tax - (dto.discount ?? 0);
 
@@ -42,8 +48,9 @@ export class OrderService {
       ...(dto.notes !== undefined ? { notes: dto.notes } : {}),
     });
 
-    this.logger.info(`Order created: ${order.id}`);
+    this.logger.info(`Order created: ${String(order._id)}`);
     await this.cache.del(`orders:customer:${customerId}`);
+    this.eventService.emit(OrderEventFactory.orderCreated(order));
 
     return order;
   }
@@ -64,20 +71,90 @@ export class OrderService {
     return result;
   }
 
-  async updateOrderStatus(orderId: string, status: OrderStatus, actorId: string) {
+  async updateOrderStatus(
+    orderId: string,
+    newStatus: OrderStatus,
+    actorId: string,
+  ) {
     const order = await this.orderRepo.findById(orderId);
     if (!order) throw new NotFoundError('Order');
 
-    if (!this.isValidTransition(order.status, status)) {
-      throw new BadRequestError(`Cannot transition from ${order.status} to ${status}`);
+    const previousStatus = order.status;
+
+    if (!this.isValidTransition(previousStatus, newStatus)) {
+      throw new BadRequestError(
+        `Cannot transition from ${previousStatus} to ${newStatus}`,
+      );
     }
 
-    const updates: Record<string, unknown> = { status };
-    if (status === OrderStatus.DELIVERED) updates.deliveredAt = new Date();
-    if (status === OrderStatus.CANCELLED) updates.cancelledAt = new Date();
+    const updates: Record<string, unknown> = { status: newStatus };
+    if (newStatus === OrderStatus.DELIVERED) updates.deliveredAt = new Date();
+    if (newStatus === OrderStatus.CANCELLED) updates.cancelledAt = new Date();
 
     const updated = await this.orderRepo.update(orderId, updates);
-    this.logger.info(`Order ${orderId} status: ${order.status} -> ${status} by ${actorId}`);
+    if (!updated) throw new NotFoundError('Order');
+
+    this.logger.info(
+      `Order ${orderId} status: ${previousStatus} → ${newStatus} by ${actorId}`,
+    );
+    this.eventService.emit(
+      OrderEventFactory.orderStatusChanged(updated, previousStatus),
+    );
+
+    return updated;
+  }
+
+  async assignRider(orderId: string, riderId: string, actorId: string) {
+    const order = await this.orderRepo.findById(orderId);
+    if (!order) throw new NotFoundError('Order');
+
+    if (order.riderId) {
+      throw new BadRequestError('Order already has an assigned rider');
+    }
+
+    const validStatuses: OrderStatus[] = [
+      OrderStatus.CONFIRMED,
+      OrderStatus.PREPARING,
+      OrderStatus.READY_FOR_PICKUP,
+    ];
+
+    if (!validStatuses.includes(order.status)) {
+      throw new BadRequestError(
+        `Cannot assign rider to an order with status: ${order.status}`,
+      );
+    }
+
+    const updated = await this.orderRepo.update(orderId, { riderId });
+    if (!updated) throw new NotFoundError('Order');
+
+    this.logger.info(`Rider ${riderId} assigned to order ${orderId} by ${actorId}`);
+    this.eventService.emit(
+      OrderEventFactory.orderRiderAssigned(updated, riderId),
+    );
+
+    return updated;
+  }
+
+  async cancelOrder(orderId: string, actorId: string, reason?: string) {
+    const order = await this.orderRepo.findById(orderId);
+    if (!order) throw new NotFoundError('Order');
+
+    if (!this.isValidTransition(order.status, OrderStatus.CANCELLED)) {
+      throw new BadRequestError(
+        `Cannot cancel an order with status: ${order.status}`,
+      );
+    }
+
+    const updated = await this.orderRepo.update(orderId, {
+      status: OrderStatus.CANCELLED,
+      cancelledAt: new Date(),
+      ...(reason !== undefined ? { cancelReason: reason } : {}),
+    });
+    if (!updated) throw new NotFoundError('Order');
+
+    this.logger.info(`Order ${orderId} cancelled by ${actorId}`);
+    await this.cache.del(`orders:customer:${order.customerId}`);
+    this.eventService.emit(OrderEventFactory.orderCancelled(updated, reason));
 
     return updated;
   }

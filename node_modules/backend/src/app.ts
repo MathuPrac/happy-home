@@ -19,6 +19,7 @@ import { usersRouter } from '@/modules/users/users.router';
 import { restaurantsRouter } from '@/modules/restaurants/restaurants.router';
 import { menuRouter } from '@/modules/menu/menu.router';
 import { ordersRouter } from '@/modules/orders/orders.router';
+import { cartRouter } from '@/modules/cart';
 import { ridersRouter } from '@/modules/riders/riders.router';
 import { paymentsRouter } from '@/modules/payments/payments.router';
 import { SocketGateway } from '@/infrastructure/messaging/socket.gateway';
@@ -83,6 +84,7 @@ export function createApp(): Application {
   app.use(`${apiPrefix}/restaurants`, restaurantsRouter);
   app.use(`${apiPrefix}/menu`, menuRouter);
   app.use(`${apiPrefix}/orders`, ordersRouter);
+  app.use(`${apiPrefix}/cart`, cartRouter);
   app.use(`${apiPrefix}/riders`, ridersRouter);
   app.use(`${apiPrefix}/payments`, paymentsRouter);
 

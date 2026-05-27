@@ -1,15 +1,32 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
+import fs from 'fs';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+const envCandidates = [
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), 'apps/backend/.env'),
+  path.resolve(__dirname, '../../.env'),
+];
+
+for (const envPath of envCandidates) {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+    break;
+  }
+}
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'staging', 'production', 'test']).default('development'),
   PORT: z.coerce.number().int().min(1).max(65535).default(4000),
   API_PREFIX: z.string().default('/api/v1'),
 
-  MONGODB_URI: z.string().url(),
+  MONGODB_URI: z
+    .string()
+    .min(1)
+    .refine((val) => val.startsWith('mongodb://') || val.startsWith('mongodb+srv://'), {
+      message: 'MONGODB_URI must be a mongodb:// or mongodb+srv:// connection string',
+    }),
   MONGODB_DB_NAME: z.string().default('restaurant_db'),
   MONGODB_MAX_POOL_SIZE: z.coerce.number().int().positive().default(10),
   MONGODB_SERVER_SELECTION_TIMEOUT: z.coerce.number().int().positive().default(5000),

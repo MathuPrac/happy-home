@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { User } from '@restaurant/shared-types';
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
 }

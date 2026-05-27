@@ -1,0 +1,14 @@
+{
+  "extends": "@restaurant/tsconfig/node.json",
+  "compilerOptions": {
+    "paths": {
+      "@/modules/*": ["./src/modules/*"],
+      "@/core/*": ["./src/core/*"],
+      "@/infrastructure/*": ["./src/infrastructure/*"],
+      "@/shared/*": ["./src/shared/*"],
+      "@/config/*": ["./src/config/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

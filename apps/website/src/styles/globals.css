@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.25rem;
+    --background: 12 8% 12%;
+    --foreground: 80 12% 96%;
+    --card: 60 10% 16%;
+    --card-foreground: 80 12% 96%;
+    --popover: 60 10% 16%;
+    --popover-foreground: 80 12% 96%;
+    --primary: 75 14% 78%;
+    --primary-foreground: 60 10% 13%;
+    --secondary: 60 15% 22%;
+    --secondary-foreground: 80 12% 96%;
+    --muted: 60 12% 20%;
+    --muted-foreground: 80 2% 68%;
+    --accent: 35 18% 55%;
+    --accent-foreground: 80 12% 97%;
+    --gold: 75 14% 78%;
+    --gold-soft: 85 8% 88%;
+    --spice: 35 18% 55%;
+    --destructive: 25 22% 60%;
+    --destructive-foreground: 80 12% 97%;
+    --border: 70 15% 28%;
+    --input: 70 15% 22%;
+    --ring: 75 14% 78%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-image: radial-gradient(ellipse at top, hsl(var(--gold) / 0.2) 0%, transparent 60%);
+    background-repeat: no-repeat;
+    background-size: 100% 800px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    @apply font-display font-normal tracking-tight;
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    @apply bg-gradient-gold bg-clip-text text-transparent;
+  }
+
+  .hairline {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--gold) / 0.6),
+      transparent
+    );
+  }
+
+  .container-luxe {
+    @apply mx-auto w-full max-w-[1280px] px-6 md:px-12;
+  }
+
+  .luxe-input {
+    @apply w-full rounded-sm border border-border bg-transparent px-4 py-3.5 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-gold focus:outline-none;
+  }
+}

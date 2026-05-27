@@ -5,6 +5,13 @@ export enum UserRole {
   ADMIN = 'admin',
 }
 
+export enum UserStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  SUSPENDED = 'suspended',
+  PENDING_VERIFICATION = 'pending_verification',
+}
+
 export enum OrderStatus {
   PENDING = 'pending',
   CONFIRMED = 'confirmed',

@@ -1,0 +1,48 @@
+{
+  "name": "@restaurant/validation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared Zod validation schemas for the Happy Home monorepo",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./auth": {
+      "types": "./dist/auth.d.ts",
+      "import": "./dist/auth.js",
+      "require": "./dist/auth.js",
+      "default": "./dist/auth.js"
+    },
+    "./orders": {
+      "types": "./dist/orders.d.ts",
+      "import": "./dist/orders.js",
+      "require": "./dist/orders.js",
+      "default": "./dist/orders.js"
+    },
+    "./reservations": {
+      "types": "./dist/reservations.d.ts",
+      "import": "./dist/reservations.js",
+      "require": "./dist/reservations.js",
+      "default": "./dist/reservations.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@restaurant/shared-types": "*",
+    "zod": "^3.23.4"
+  },
+  "devDependencies": {
+    "@restaurant/tsconfig": "*",
+    "typescript": "^5.4.5"
+  }
+}
