@@ -2,6 +2,7 @@ import { createLogger } from '@/shared/utils/logger';
 import { BadRequestError } from '@/core/errors';
 import { CartService } from '@/modules/cart/services/cart.service';
 import { OrderService } from '@/modules/orders/services/order.service';
+import { PriceLockService } from './price-lock.service';
 import { config } from '@/config';
 import type { CheckoutInput } from '../validations/checkout.validators';
 import type { CheckoutResult } from '../dtos/checkout.dto';
@@ -18,7 +19,7 @@ try {
   if (config.stripe.secretKey) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const Stripe = require('stripe') as typeof import('stripe').default;
-    stripe = new Stripe(config.stripe.secretKey, { apiVersion: '2024-04-10' as const });
+    stripe = new Stripe(config.stripe.secretKey, { apiVersion: '2024-04-10' });
   }
 } catch (err) {
   log.error('Failed to initialise Stripe', { error: err });
@@ -28,6 +29,7 @@ export class CheckoutService {
   constructor(
     private readonly cartService: CartService,
     private readonly orderService: OrderService,
+    private readonly priceLockService: PriceLockService,
   ) {}
 
   async checkout(customerId: string, input: CheckoutInput): Promise<CheckoutResult> {
@@ -46,10 +48,13 @@ export class CheckoutService {
       throw new BadRequestError('Card payments are currently unavailable. Please use cash.');
     }
 
+    // Validate prices and recompute cart using live menu prices
+    const { items: validatedItems, warnings } = await this.priceLockService.validateAndRecomputeCart(cart.items);
+
     // P6: Create the order first — order.total is the single source of truth
     const order = await this.orderService.createOrder(customerId, {
       restaurantId: cart.restaurantId,
-      items: cart.items.map((i) => ({
+      items: validatedItems.map((i) => ({
         menuItemId: i.menuItemId,
         name: i.name,
         price: i.price,
@@ -102,6 +107,7 @@ export class CheckoutService {
       ...(paymentClientSecret !== undefined ? { paymentClientSecret } : {}),
       paymentStatus,
       message: 'Order placed successfully',
+      warnings,
     };
   }
 }

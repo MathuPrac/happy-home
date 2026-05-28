@@ -18,7 +18,7 @@ import { httpLogStream } from '@/shared/utils/logger';
 import { authRouter } from '@/modules/auth';
 import { usersRouter } from '@/modules/users/users.router';
 import { restaurantsRouter } from '@/modules/restaurants/restaurants.router';
-import { menuRouter } from '@/modules/menu/menu.router';
+import { createMenuRouter } from '@/modules/menu/menu.router';
 import { cartRouter } from '@/modules/cart';
 import { ridersRouter } from '@/modules/riders/riders.router';
 import { paymentsRouter } from '@/modules/payments/payments.router';
@@ -105,7 +105,7 @@ export function createAppServer(): AppServer {
   app.use(`${apiPrefix}/auth`, authRouter);
   app.use(`${apiPrefix}/users`, usersRouter);
   app.use(`${apiPrefix}/restaurants`, restaurantsRouter);
-  app.use(`${apiPrefix}/menu`, menuRouter);
+  app.use(`${apiPrefix}/menu`, createMenuRouter());
   app.use(`${apiPrefix}/orders`, createOrdersRouter(gateway, eventService));
   app.use(`${apiPrefix}/checkout`, createCheckoutRouter(gateway, eventService));
   app.use(`${apiPrefix}/cart`, cartRouter);

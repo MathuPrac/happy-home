@@ -18,7 +18,9 @@ export abstract class BaseRepository<T extends Document> {
   ): Promise<{ data: T[]; meta: PaginationMeta }> {
     const { page = 1, limit = 20, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     const skip = (page - 1) * limit;
-    const sort: Record<string, 1 | -1> = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
+    const ALLOWED_SORT_FIELDS = ['createdAt', 'updatedAt', 'status', 'name', 'basePrice', 'total', 'category'];
+    const safeSortBy = ALLOWED_SORT_FIELDS.includes(sortBy) ? sortBy : 'createdAt';
+    const sort: Record<string, 1 | -1> = { [safeSortBy]: sortOrder === 'asc' ? 1 : -1 };
 
     const [data, total] = await Promise.all([
       this.model.find(filter).sort(sort).skip(skip).limit(limit).exec(),

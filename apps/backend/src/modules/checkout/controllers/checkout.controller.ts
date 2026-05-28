@@ -6,6 +6,8 @@ import { OrderService } from '@/modules/orders/services/order.service';
 import { OrderRepository } from '@/modules/orders/repositories/order.repository';
 import { OrderEventService } from '@/modules/orders/events/order-event.service';
 import { CacheService } from '@/infrastructure/cache/redis/cache.service';
+import { MenuItemRepository } from '@/modules/menu/repositories/menu-item.repository';
+import { PriceLockService } from '../services/price-lock.service';
 import { created } from '@/shared/http/response';
 import { checkoutSchema } from '../validations/checkout.validators';
 import { ValidationError } from '@/core/errors/app-error';
@@ -21,7 +23,9 @@ export class CheckoutController {
       cache,
       eventService,
     );
-    this.service = new CheckoutService(cartService, orderService);
+    const menuItemRepo = new MenuItemRepository();
+    const priceLockService = new PriceLockService((ids) => menuItemRepo.findByIds(ids));
+    this.service = new CheckoutService(cartService, orderService, priceLockService);
   }
 
   checkout = async (req: AuthenticatedRequest, res: Response): Promise<void> => {

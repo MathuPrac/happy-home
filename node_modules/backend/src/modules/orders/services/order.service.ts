@@ -68,11 +68,17 @@ export class OrderService {
       throw new NotFoundError('Order');
     }
 
+    // NOTE: For RESTAURANT_OWNER tokens, req.user.sub is assumed to be the restaurant's ID.
+    // If the JWT payload uses a different field for restaurant identity, update accordingly.
+    if (requesterRole === UserRole.RESTAURANT_OWNER && order.restaurantId !== requesterId) {
+      throw new NotFoundError('Order');
+    }
+
     return order;
   }
 
   async getCustomerOrders(customerId: string, query: PaginationQuery) {
-    const cacheKey = `orders:customer:${customerId}:${query.page}`;
+    const cacheKey = `orders:customer:${customerId}:${query.page}:${query.limit}`;
     const cached = await this.cache.get(cacheKey);
     if (cached) return cached;
 

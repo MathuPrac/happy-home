@@ -19,4 +19,5 @@ export interface CheckoutResult {
   paymentClientSecret?: string;
   paymentStatus: string;
   message: string;
+  warnings: string[];
 }
