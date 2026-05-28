@@ -12,11 +12,17 @@ function cartKey(customerId: string): string {
   return `cart:${customerId}`;
 }
 
-function computeSubtotal(items: CartItem[]): number {
+function computeSubtotal(items: CartItem[] = []): number {
   return parseFloat(
     items
       .reduce((sum, item) => {
-        const customizationTotal = item.customizations.reduce((c, x) => c + x.price, 0);
+        const customizations = item.customizations ?? [];
+
+        const customizationTotal = customizations.reduce(
+          (c, x) => c + x.price,
+          0,
+        );
+
         return sum + (item.price + customizationTotal) * item.quantity;
       }, 0)
       .toFixed(2),
@@ -28,7 +34,13 @@ export class CartService {
 
   async getCart(customerId: string): Promise<Cart> {
     const raw = await this.cache.get<Cart>(cartKey(customerId));
-    if (raw) return raw;
+
+    if (raw) {
+      return {
+        ...raw,
+        items: raw.items ?? [],
+      };
+    }
 
     return {
       customerId,
@@ -43,7 +55,11 @@ export class CartService {
   async addItem(customerId: string, input: AddToCartInput): Promise<Cart> {
     const cart = await this.getCart(customerId);
 
-    if (cart.restaurantId && cart.restaurantId !== input.restaurantId && cart.items.length > 0) {
+    if (
+      cart.restaurantId &&
+      cart.restaurantId !== input.restaurantId &&
+      cart.items.length > 0
+    ) {
       throw new BadRequestError(
         'Your cart already has items from a different restaurant. Please clear your cart first.',
       );
@@ -52,14 +68,25 @@ export class CartService {
     const existingIndex = cart.items.findIndex(
       (i) =>
         i.menuItemId === input.menuItemId &&
-        JSON.stringify(i.customizations) === JSON.stringify(input.customizations),
+        JSON.stringify(i.customizations ?? []) ===
+          JSON.stringify(input.customizations ?? []),
     );
 
     if (existingIndex >= 0) {
       const existing = cart.items[existingIndex]!;
+
       const newQty = existing.quantity + input.quantity;
-      if (newQty > 20) throw new BadRequestError('Maximum 20 of the same item per cart');
-      cart.items[existingIndex] = { ...existing, quantity: newQty };
+
+      if (newQty > 20) {
+        throw new BadRequestError(
+          'Maximum 20 of the same item per cart',
+        );
+      }
+
+      cart.items[existingIndex] = {
+        ...existing,
+        quantity: newQty,
+      };
     } else {
       cart.items.push({
         menuItemId: input.menuItemId,
@@ -67,18 +94,29 @@ export class CartService {
         name: input.name,
         price: input.price,
         quantity: input.quantity,
-        customizations: input.customizations,
+        customizations: input.customizations ?? [],
         ...(input.imageUrl ? { imageUrl: input.imageUrl } : {}),
       });
     }
 
     cart.restaurantId = input.restaurantId;
     cart.subtotal = computeSubtotal(cart.items);
-    cart.itemCount = cart.items.reduce((s, i) => s + i.quantity, 0);
+    cart.itemCount = cart.items.reduce(
+      (s, i) => s + i.quantity,
+      0,
+    );
     cart.updatedAt = new Date().toISOString();
 
-    await this.cache.set(cartKey(customerId), cart, CART_TTL_SECONDS);
-    log.info('Item added to cart', { customerId, menuItemId: input.menuItemId });
+    await this.cache.set(
+      cartKey(customerId),
+      cart,
+      CART_TTL_SECONDS,
+    );
+
+    log.info('Item added to cart', {
+      customerId,
+      menuItemId: input.menuItemId,
+    });
 
     return cart;
   }
@@ -90,8 +128,13 @@ export class CartService {
   ): Promise<Cart> {
     const cart = await this.getCart(customerId);
 
-    const idx = cart.items.findIndex((i) => i.menuItemId === menuItemId);
-    if (idx < 0) throw new BadRequestError('Item not found in cart');
+    const idx = cart.items.findIndex(
+      (i) => i.menuItemId === menuItemId,
+    );
+
+    if (idx < 0) {
+      throw new BadRequestError('Item not found in cart');
+    }
 
     if (quantity === 0) {
       cart.items.splice(idx, 1);
@@ -104,19 +147,37 @@ export class CartService {
     }
 
     cart.subtotal = computeSubtotal(cart.items);
-    cart.itemCount = cart.items.reduce((s, i) => s + i.quantity, 0);
+
+    cart.itemCount = cart.items.reduce(
+      (s, i) => s + i.quantity,
+      0,
+    );
+
     cart.updatedAt = new Date().toISOString();
 
-    await this.cache.set(cartKey(customerId), cart, CART_TTL_SECONDS);
+    await this.cache.set(
+      cartKey(customerId),
+      cart,
+      CART_TTL_SECONDS,
+    );
+
     return cart;
   }
 
-  async removeItem(customerId: string, menuItemId: string): Promise<Cart> {
-    return this.updateItemQuantity(customerId, menuItemId, 0);
+  async removeItem(
+    customerId: string,
+    menuItemId: string,
+  ): Promise<Cart> {
+    return this.updateItemQuantity(
+      customerId,
+      menuItemId,
+      0,
+    );
   }
 
   async clearCart(customerId: string): Promise<void> {
     await this.cache.del(cartKey(customerId));
+
     log.info('Cart cleared', { customerId });
   }
 

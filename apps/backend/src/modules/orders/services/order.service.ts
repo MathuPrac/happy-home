@@ -1,3 +1,4 @@
+import { UserRole } from '@restaurant/shared-types';
 import type { CreateOrderDto } from '../dtos/create-order.dto';
 import type { PaginationQuery } from '@restaurant/shared-types';
 import { OrderStatus } from '@restaurant/shared-types';
@@ -55,9 +56,18 @@ export class OrderService {
     return order;
   }
 
-  async getOrderById(orderId: string) {
+  async getOrderById(orderId: string, requesterId: string, requesterRole: UserRole) {
     const order = await this.orderRepo.findById(orderId);
     if (!order) throw new NotFoundError('Order');
+
+    if (requesterRole === UserRole.CUSTOMER && order.customerId !== requesterId) {
+      throw new NotFoundError('Order');
+    }
+
+    if (requesterRole === UserRole.RIDER && order.riderId !== requesterId) {
+      throw new NotFoundError('Order');
+    }
+
     return order;
   }
 
@@ -97,6 +107,7 @@ export class OrderService {
     this.logger.info(
       `Order ${orderId} status: ${previousStatus} → ${newStatus} by ${actorId}`,
     );
+    await this.cache.del(`orders:customer:${order.customerId}`);
     this.eventService.emit(
       OrderEventFactory.orderStatusChanged(updated, previousStatus),
     );

@@ -14,7 +14,6 @@ export const checkoutSchema = z.object({
   paymentMethod: z.nativeEnum(PaymentMethod),
   deliveryAddress: addressSchema,
   notes: z.string().max(500).optional(),
-  promoCode: z.string().max(50).optional(),
 });
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;

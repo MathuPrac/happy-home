@@ -1,4 +1,5 @@
 import type { PaymentMethod } from '@restaurant/shared-types';
+import type { IOrder } from '@/modules/orders/entities/order.entity';
 
 export interface CheckoutDto {
   paymentMethod: PaymentMethod;
@@ -11,11 +12,10 @@ export interface CheckoutDto {
     coordinates?: { lat: number; lng: number };
   };
   notes?: string;
-  promoCode?: string;
 }
 
 export interface CheckoutResult {
-  order: unknown;
+  order: IOrder;
   paymentClientSecret?: string;
   paymentStatus: string;
   message: string;
