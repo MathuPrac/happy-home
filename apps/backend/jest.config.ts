@@ -6,15 +6,13 @@ const config: Config = {
   rootDir: 'src',
   testMatch: ['**/__tests__/**/*.test.ts'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
-    '^@restaurant/shared-types$': '<rootDir>/../../packages/shared-types/src/index.ts',
-    '^@restaurant/validation$': '<rootDir>/../../packages/validation/src/index.ts',
+    '^@/(.*)$': '/$1',
+    '^@restaurant/shared-types$': '/../../../packages/types/src/index.ts',
+    '^@restaurant/validation$': '/../../../packages/validation/src/index.ts',
   },
   transform: {
     '^.+\\.ts$': ['ts-jest', {
-      tsconfig: {
-        exactOptionalPropertyTypes: false, // relax for test mocks
-      },
+      tsconfig: '/../tsconfig.test.json',
     }],
   },
   clearMocks: true,
