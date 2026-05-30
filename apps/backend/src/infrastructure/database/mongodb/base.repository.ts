@@ -28,6 +28,8 @@ export abstract class BaseRepository<T extends Document> {
     ]);
 
     const totalPages = Math.ceil(total / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
 
     return {
       data,
@@ -36,9 +38,11 @@ export abstract class BaseRepository<T extends Document> {
         limit,
         total,
         totalPages,
-        hasNext: page < totalPages,
-        hasPrev: page > 1,
-      },
+        hasNext: hasNextPage,
+        hasPrev: hasPrevPage,
+        hasNextPage,
+        hasPrevPage,
+      } as unknown as PaginationMeta,
     };
   }
 
